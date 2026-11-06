@@ -63,7 +63,7 @@ class MovieCard extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () => print('Book button pressed!'),
+                  onPressed: () => debugPrint('Book button pressed!'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: cinemaBrand,
                     foregroundColor: cinemaFontWhite,

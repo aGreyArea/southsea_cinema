@@ -24,7 +24,8 @@ void main() {
       expect(movie.price, '9.50');
     });
 
-    test('formattedPrice shows a whole-pound price with two decimal places', () {
+    test('formattedPrice shows a whole-pound price with two decimal places',
+        () {
       const Movie movie = Movie(
         id: 'paranormal-activity',
         name: 'Paranormal Activity',

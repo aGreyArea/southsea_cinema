@@ -30,7 +30,8 @@ class _MovieListingState extends State<MovieListing> {
         padding: EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [ // lists widgets inside of a column
+          children: [
+            // lists widgets inside of a column
             Text(
               'Obsession (2025) (18)',
               style: TextStyle(
@@ -85,36 +86,40 @@ class _MovieListingState extends State<MovieListing> {
 
             SizedBox(height: 18),
 
-            Row( // x axis rather than y
-              children: [ 
+            Row(
+              // x axis rather than y
+              children: [
                 SizedBox(
                   width: 90,
-                  child: DropdownButtonFormField<int>( // create the widget
+                  child: DropdownButtonFormField<int>(
+                    // create the widget
                     initialValue: 0, // 0, blank value
                     style: const TextStyle(color: Colors.black, fontSize: 16),
                     dropdownColor: const Color(0xFFF0F0F0),
                     decoration: const InputDecoration(
                       isDense: true, // compact
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       filled: true,
                       fillColor: Color(0xFFF0F0F0),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero, // square corners > rounded
+                        borderRadius:
+                            BorderRadius.zero, // square corners > rounded
                       ),
                     ),
-                    items: List.generate( // creates 6 values in the dropdown 1 itteration is one option
+                    items: List.generate(
+                      // creates 6 values in the dropdown 1 itteration is one option
                       6,
                       (ticketAmount) => DropdownMenuItem<int>(
                         value: ticketAmount,
-                        child: Text('$ticketAmount'), // int to text (string interpolation) ticketAmount.toString()
+                        child: Text(
+                            '$ticketAmount'), // int to text (string interpolation) ticketAmount.toString()
                       ),
                     ),
                     onChanged: (value) {}, // null until selected
                   ),
                 ),
-
                 SizedBox(width: 16),
-
                 Text(
                   'Adult (${widget.movie.formattedPrice})',
                   style: TextStyle(
@@ -122,9 +127,7 @@ class _MovieListingState extends State<MovieListing> {
                     fontSize: 20,
                   ),
                 ),
-
                 SizedBox(width: 24),
-
                 SizedBox(
                   width: 150,
                   height: 36,
@@ -136,9 +139,10 @@ class _MovieListingState extends State<MovieListing> {
                       backgroundColor: cinemaBrand,
                       foregroundColor: cinemaFontWhite,
                       elevation: 0, // no shadow
-                      padding: EdgeInsets.zero, // removes padding 
+                      padding: EdgeInsets.zero, // removes padding
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // zero = square corners
+                        borderRadius:
+                            BorderRadius.zero, // zero = square corners
                       ),
                     ),
                     child: const Text(
@@ -150,10 +154,8 @@ class _MovieListingState extends State<MovieListing> {
                     ),
                   ),
                 ),
-
               ],
             ),
-
           ],
         ),
       ),
