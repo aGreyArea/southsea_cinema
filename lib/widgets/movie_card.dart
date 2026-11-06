@@ -34,11 +34,7 @@ class MovieCard extends StatelessWidget {
                     children: [
                       Text(
                         '${movie.name} (${movie.ageRating})',
-                        style: const TextStyle(
-                          color: cinemaFontWhite,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: cinemaHeaderStyle,
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -68,12 +64,17 @@ class MovieCard extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () =>
+                      debugPrint('Book button pressed for ${movie.name}!'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: cinemaBrand,
                     foregroundColor: cinemaFontWhite,
+                    elevation: 0, // no shadow
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero, // square corners
+                    ),
                   ),
-                  child: const Text('Book'),
+                  child: const Text('BOOK'),
                 ),
               ],
             ),
