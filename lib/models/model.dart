@@ -16,6 +16,4 @@ class Movie {
     required this.screeningTime,
     required this.price,
   });
-
-  Movie(this.id, this.name, this.synopsis, this.ageRating, this.imagePath, this.screeningTime, this.price)
 }
