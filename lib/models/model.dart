@@ -16,4 +16,6 @@ class Movie {
     required this.screeningTime,
     required this.price,
   });
+
+  String get formattedPrice => '£$price';
 }

@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
+import 'package:southsea_cinema/models/model.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
 
-class MovieListing extends StatelessWidget {
-  const MovieListing({super.key});
+class MovieListing extends StatefulWidget {
+  final Movie movie;
+
+  const MovieListing({super.key, required this.movie});
+
+  @override
+  State<MovieListing> createState() => _MovieListingState();
+}
+
+class _MovieListingState extends State<MovieListing> {
   // static const blue = Color(0xFF54BFDA) // can't do const on its own as inside a class dart doesnt treat them as constants but as ordinary instance fields that are changeable
   // static const grey = Color(0xFFF0F0F0) // moved to constants file
 
@@ -107,7 +116,7 @@ class MovieListing extends StatelessWidget {
                 SizedBox(width: 16),
 
                 Text(
-                  'Adult (£7.50)',
+                  'Adult (${widget.movie.formattedPrice})',
                   style: TextStyle(
                     color: cinemaFontWhite,
                     fontSize: 20,

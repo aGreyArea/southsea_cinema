@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/model.dart';
 
-// Stateless: the card only displays the Movie it is given and never changes on its own.
 class MovieCard extends StatelessWidget {
   final Movie movie;
 
@@ -24,7 +23,7 @@ class MovieCard extends StatelessWidget {
                 Image.asset(
                   movie.imagePath,
                   width: 80,
-                  height: 120, // posters are portrait, so taller than wide
+                  height: 80,
                   fit: BoxFit.cover,
                 ),
                 const SizedBox(width: 16),
@@ -64,8 +63,7 @@ class MovieCard extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () =>
-                      debugPrint('Book button pressed for ${movie.name}!'),
+                  onPressed: () => print('Book button pressed!'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: cinemaBrand,
                     foregroundColor: cinemaFontWhite,
