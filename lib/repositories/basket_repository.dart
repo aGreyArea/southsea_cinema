@@ -10,7 +10,9 @@ class BasketRepository {
   final List<CartItem> _items = [];
 
   // read-only copy so the basket can only be changed through the methods below
-  List<CartItem> get items => List.unmodifiable(_items);
+  List<CartItem> getItems() {
+    return List.unmodifiable(_items);
+  }
 
   bool get isEmpty => _items.isEmpty;
 

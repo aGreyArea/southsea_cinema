@@ -13,7 +13,7 @@ void main() {
     test('basket starts empty', () {
       final BasketRepository basket = BasketRepository();
 
-      expect(basket.items, isEmpty);
+      expect(basket.getItems(), isEmpty);
       expect(basket.isEmpty, isTrue);
       expect(basket.total, 0);
       expect(basket.totalQuantity, 0);
@@ -25,9 +25,9 @@ void main() {
       final BasketRepository basket = BasketRepository();
       basket.addTickets(repoMan, 2);
 
-      expect(basket.items.length, 1);
-      expect(basket.items[0].movie.id, 'repo-man');
-      expect(basket.items[0].quantity, 2);
+      expect(basket.getItems().length, 1);
+      expect(basket.getItems()[0].movie.id, 'repo-man');
+      expect(basket.getItems()[0].quantity, 2);
     });
 
     test('addTickets for the same movie increases its quantity', () {
@@ -35,8 +35,8 @@ void main() {
       basket.addTickets(repoMan, 2);
       basket.addTickets(repoMan, 1);
 
-      expect(basket.items.length, 1);
-      expect(basket.items[0].quantity, 3);
+      expect(basket.getItems().length, 1);
+      expect(basket.getItems()[0].quantity, 3);
     });
 
     test('addTickets ignores zero or negative quantities', () {
@@ -44,7 +44,7 @@ void main() {
       basket.addTickets(repoMan, 0);
       basket.addTickets(repoMan, -1);
 
-      expect(basket.items, isEmpty);
+      expect(basket.getItems(), isEmpty);
     });
 
     test('total and totalQuantity cover every movie in the basket', () {
@@ -52,7 +52,7 @@ void main() {
       basket.addTickets(repoMan, 2); // 19.00
       basket.addTickets(paranormalActivity, 3); // 21.00
 
-      expect(basket.items.length, 2);
+      expect(basket.getItems().length, 2);
       expect(basket.totalQuantity, 5);
       expect(basket.total, 40.00);
       expect(basket.serviceCharge, closeTo(4.00, 0.001)); // 5 x £0.80
@@ -65,8 +65,8 @@ void main() {
       basket.addTickets(paranormalActivity, 1);
       basket.removeTickets(repoMan);
 
-      expect(basket.items.length, 1);
-      expect(basket.items[0].movie.id, 'paranormal-activity');
+      expect(basket.getItems().length, 1);
+      expect(basket.getItems()[0].movie.id, 'paranormal-activity');
       expect(basket.total, 7.00);
     });
 
@@ -76,7 +76,7 @@ void main() {
       basket.addTickets(paranormalActivity, 1);
       basket.clear();
 
-      expect(basket.items, isEmpty);
+      expect(basket.getItems(), isEmpty);
       expect(basket.total, 0);
     });
 
@@ -84,7 +84,7 @@ void main() {
       final BasketRepository basket = BasketRepository();
       basket.addTickets(repoMan, 1);
 
-      expect(() => basket.items.clear(), throwsUnsupportedError);
+      expect(() => basket.getItems().clear(), throwsUnsupportedError);
     });
   });
 }

@@ -2,27 +2,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:southsea_cinema/models/user_settings.dart';
 
 void main() {
-  group('UserSettings', () {
-    test('UserSettings defaults to empty values and false newsletter', () {
-      const UserSettings settings = UserSettings();
-      expect(settings.address, isEmpty);
-      expect(settings.email, isEmpty);
-      expect(settings.patronNumber, isEmpty);
-      expect(settings.receiveNewsletter, isFalse);
-    });
+  test('UserSettings defaults to empty values and false newsletter', () {
+    const UserSettings settings = UserSettings();
+    expect(settings.name, isEmpty);
+    expect(settings.address, isEmpty);
+    expect(settings.email, isEmpty);
+    expect(settings.receiveNewsletter, isFalse);
+    expect(settings.patronNumber, isEmpty);
+  });
 
-    test('UserSettings stores configured values', () {
-      const UserSettings settings = UserSettings(
-        address: 'Buckingham Building, Lion Terrace, Portsmouth PO1 3HE',
-        email: 'alex@example.com',
-        patronNumber: '1234',
-        receiveNewsletter: true,
-      );
-      expect(settings.address,
-          'Buckingham Building, Lion Terrace, Portsmouth PO1 3HE');
-      expect(settings.email, 'alex@example.com');
-      expect(settings.patronNumber, '1234');
-      expect(settings.receiveNewsletter, isTrue);
-    });
+  test('UserSettings stores configured values', () {
+    const UserSettings settings = UserSettings(
+      name: 'Taylor Reed',
+      address: '22 Guildhall Walk',
+      email: 'taylor@example.com',
+      receiveNewsletter: true,
+      patronNumber: '1234',
+    );
+    expect(settings.name, 'Taylor Reed');
+    expect(settings.address, '22 Guildhall Walk');
+    expect(settings.email, 'taylor@example.com');
+    expect(settings.receiveNewsletter, isTrue);
+    expect(settings.patronNumber, '1234');
   });
 }

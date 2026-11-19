@@ -48,10 +48,12 @@ class _SettingsViewState extends State<SettingsView> {
   void _saveSettings() {
     SettingsRepository.instance.save(
       UserSettings(
+        // no name field on this form, so keep whatever name is already saved
+        name: SettingsRepository.instance.settings.name,
         address: _addressController.text.trim(),
         email: _emailController.text.trim(),
-        patronNumber: _patronNumberController.text.trim(),
         receiveNewsletter: _receiveNewsletter,
+        patronNumber: _patronNumberController.text.trim(),
       ),
     );
     ScaffoldMessenger.of(context).showSnackBar(

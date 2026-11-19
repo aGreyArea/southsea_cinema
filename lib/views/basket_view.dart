@@ -24,11 +24,11 @@ class _BasketViewState extends State<BasketView> {
   }
 
   void _buyTickets() {
-    final BasketRepository basket = BasketRepository.instance;
-    final int tickets = basket.totalQuantity;
-    final String total = _formatPrice(basket.totalDue);
+    final BasketRepository cart = BasketRepository.instance;
+    final int tickets = cart.totalQuantity;
+    final String total = _formatPrice(cart.totalDue);
     setState(() {
-      basket.clear();
+      cart.clear();
       _confirmationMessage =
           'Thank you! Your order for $tickets tickets ($total) has been placed.';
     });
@@ -41,8 +41,8 @@ class _BasketViewState extends State<BasketView> {
 
   @override
   Widget build(BuildContext context) {
-    final BasketRepository basket = BasketRepository.instance;
-    final List<CartItem> items = basket.items;
+    final BasketRepository cart = BasketRepository.instance;
+    final List<CartItem> items = cart.getItems();
 
     final Widget content;
     if (items.isEmpty) {
@@ -51,71 +51,18 @@ class _BasketViewState extends State<BasketView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _EmptyBasket(),
-            const SizedBox(height: 16),
-            Text(
-              _confirmationMessage,
-              style: const TextStyle(color: cinemaBrand, fontSize: 16),
-            ),
+            Text(_confirmationMessage),
           ],
         );
       } else {
         content = const _EmptyBasket();
       }
     } else {
-      content = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _BasketHeader(),
-          const SizedBox(height: 12),
-          for (final CartItem item in items)
-            _BasketRow(
-              item: item,
-              onDelete: () => _removeTickets(item),
-            ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Service Charge',
-                style: TextStyle(color: cinemaFontWhite, fontSize: 16),
-              ),
-              Text(
-                _formatPrice(basket.serviceCharge),
-                style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Total Due',
-                style: TextStyle(
-                  color: cinemaFontWhite,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                _formatPrice(basket.totalDue),
-                style: const TextStyle(
-                  color: cinemaFontWhite,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              PrimaryButton(label: 'UPDATE ORDER', onPressed: _updateOrder),
-              PrimaryButton(label: 'BUY TICKETS', onPressed: _buyTickets),
-            ],
-          ),
-        ],
+      content = _BasketList(
+        cart: cart,
+        onDelete: _removeTickets,
+        onUpdateOrder: _updateOrder,
+        onBuyTickets: _buyTickets,
       );
     }
 
@@ -125,22 +72,8 @@ class _BasketViewState extends State<BasketView> {
       ),
       drawer: const NavDrawer(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'MY ORDER',
-              style: TextStyle(
-                color: cinemaFontWhite,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-            content,
-          ],
-        ),
+        padding: const EdgeInsets.all(16.0),
+        child: content,
       ),
     );
   }
@@ -150,14 +83,119 @@ String _formatPrice(double price) {
   return '£${price.toStringAsFixed(2)}';
 }
 
+// "MY ORDER" heading shown at the top of the basket
+class _OrderHeading extends StatelessWidget {
+  const _OrderHeading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(bottom: 24),
+      child: Text(
+        'MY ORDER',
+        style: TextStyle(
+          color: cinemaFontWhite,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+// replaces 'Empty basket placeholder'
 class _EmptyBasket extends StatelessWidget {
   const _EmptyBasket();
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'Your basket is empty.',
-      style: TextStyle(color: cinemaFontWhite, fontSize: 16),
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _OrderHeading(),
+        Padding(
+          padding: EdgeInsets.only(bottom: 16),
+          child: Text(
+            'Your basket is empty.',
+            style: TextStyle(color: cinemaFontWhite, fontSize: 16),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// replaces 'Basket list placeholder'
+class _BasketList extends StatelessWidget {
+  final BasketRepository cart;
+  final void Function(CartItem item) onDelete;
+  final VoidCallback onUpdateOrder;
+  final VoidCallback onBuyTickets;
+
+  const _BasketList({
+    required this.cart,
+    required this.onDelete,
+    required this.onUpdateOrder,
+    required this.onBuyTickets,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _OrderHeading(),
+        const _BasketHeader(),
+        const SizedBox(height: 12),
+        for (final CartItem item in cart.getItems())
+          _BasketRow(
+            item: item,
+            onDelete: () => onDelete(item),
+          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Service Charge',
+              style: TextStyle(color: cinemaFontWhite, fontSize: 16),
+            ),
+            Text(
+              _formatPrice(cart.serviceCharge),
+              style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Total Due',
+              style: TextStyle(
+                color: cinemaFontWhite,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              _formatPrice(cart.totalDue),
+              style: const TextStyle(
+                color: cinemaFontWhite,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            PrimaryButton(label: 'UPDATE ORDER', onPressed: onUpdateOrder),
+            PrimaryButton(label: 'BUY TICKETS', onPressed: onBuyTickets),
+          ],
+        ),
+      ],
     );
   }
 }

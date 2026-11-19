@@ -82,7 +82,7 @@ void main() {
       expect(find.text('£21.00'), findsOneWidget);
       expect(find.text('£2.40'), findsOneWidget); // 3 x £0.80
       expect(find.text('£23.40'), findsOneWidget);
-      expect(basket.items.length, 1);
+      expect(basket.getItems().length, 1);
     });
 
     testWidgets('deleting the last movie shows the empty message',
@@ -134,9 +134,9 @@ void main() {
         find.descendant(of: firstCard, matching: find.text('Add to order')));
     await tester.pump();
 
-    expect(basket.items.length, 1);
-    expect(basket.items[0].movie.id, 'repo-man');
-    expect(basket.items[0].quantity, 2);
+    expect(basket.getItems().length, 1);
+    expect(basket.getItems()[0].movie.id, 'repo-man');
+    expect(basket.getItems()[0].quantity, 2);
     expect(find.text('Added 2 tickets for Repo Man to your basket'),
         findsOneWidget);
   });
