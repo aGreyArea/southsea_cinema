@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/model.dart';
+import 'package:southsea_cinema/views/movie_listing.dart';
+import 'package:southsea_cinema/widgets/primary_button.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -100,30 +102,36 @@ class MovieCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              width: 150,
-              height: 36,
-              child: ElevatedButton(
-                onPressed: () {
-                  debugPrint('Add to Order Pressed');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: cinemaBrand,
-                  foregroundColor: cinemaFontWhite,
-                  elevation: 0, // no shadow
-                  padding: EdgeInsets.zero, // removes padding
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // zero = square corners
+            Row(
+              children: [
+                SizedBox(
+                  width: 150,
+                  height: 36,
+                  child: PrimaryButton(
+                    label: 'Add to order',
+                    onPressed: () {
+                      debugPrint('Add to Order Pressed');
+                    },
                   ),
                 ),
-                child: const Text(
-                  'Add to order',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
+                const SizedBox(width: 16),
+                SizedBox(
+                  width: 150,
+                  height: 36,
+                  child: PrimaryButton(
+                    label: 'Details',
+                    onPressed: () {
+                      // opens a page showing only this movie, bigger
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MovieListing(movie: movie),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ),
+              ],
             ),
           ],
         ),

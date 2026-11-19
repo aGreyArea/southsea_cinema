@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/main.dart';
 import 'package:southsea_cinema/views/home_view.dart';
+import 'package:southsea_cinema/views/movie_listing.dart';
 import 'package:southsea_cinema/widgets/movie_card.dart';
 
 void main() {
@@ -32,6 +33,23 @@ void main() {
       expect(find.text('Tickets (£7.00 each)'), findsOneWidget);
       expect(find.byType(DropdownButtonFormField<int>), findsNWidgets(2));
       expect(find.text('Add to order'), findsNWidgets(2));
+      expect(find.text('Details'), findsNWidgets(2));
+    });
+
+    testWidgets('Details button opens only that movie',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(const SouthseaCinemaApp());
+      await tester.tap(find.text('Details').first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MovieListing), findsOneWidget);
+      expect(find.byType(MovieCard), findsNothing);
+      expect(find.text('REPO MAN (15)'), findsOneWidget);
+      expect(find.text('PARANORMAL ACTIVITY (15)'), findsNothing);
     });
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/model.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
+import 'package:southsea_cinema/widgets/primary_button.dart';
 
 class MovieListing extends StatefulWidget {
   final Movie movie;
@@ -20,46 +21,62 @@ class _MovieListingState extends State<MovieListing> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(appTitle, style: cinemaHeaderStyle),
-        backgroundColor: cinemaSurface,
-        iconTheme: const IconThemeData(color: cinemaBrand),
-        elevation: 0,
+        title: const Text(appTitle),
       ),
       drawer: const NavDrawer(),
-      body: Container(
-        padding: EdgeInsets.all(24),
+      body: SingleChildScrollView(
+        // scrolls if the bigger layout doesn't fit on screen
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // lists widgets inside of a column
             Text(
-              'Obsession (2025) (18)',
-              style: TextStyle(
+              '${widget.movie.name.toUpperCase()} (${widget.movie.ageRating})',
+              style: const TextStyle(
                 color: cinemaFontWhite,
                 fontSize: 32,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
-            SizedBox(height: 40),
+            const SizedBox(height: 24),
 
-            Text(
-              '''After breaking the mysterious "One Wish Willow" to win his crush's heart, a hopeless romantic finds himself getting exactly what he asked for but soon discovers that some desires come at a dark, sinister price.''',
-              style: TextStyle(
-                color: cinemaFontWhite,
-                fontSize: 20,
-                fontWeight: FontWeight.normal,
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: cinemaFontWhite, width: 2),
+              ),
+              child: Image.asset(
+                widget.movie.imagePath,
+                width: 200, // double the size shown on the card
+                height: 300,
+                fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 40),
+
+            const SizedBox(height: 24),
 
             Text(
-              "Thursday 22 Oct 2026, 18:00 - ends at 19:14 (1h, 14m)",
-              style: TextStyle(
+              widget.movie.synopsis,
+              style: const TextStyle(
                 color: cinemaFontWhite,
                 fontSize: 20,
-                fontWeight: FontWeight.normal,
+                height: 1.5,
               ),
+            ),
+
+            const SizedBox(height: 24),
+
+            const Text(
+              'Southsea Cinema Room',
+              style: TextStyle(color: cinemaFontWhite, fontSize: 20),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              widget.movie.screeningTime,
+              style: const TextStyle(color: cinemaFontWhite, fontSize: 20),
             ),
 
             SizedBox(height: 28),
@@ -131,27 +148,11 @@ class _MovieListingState extends State<MovieListing> {
                 SizedBox(
                   width: 150,
                   height: 36,
-                  child: ElevatedButton(
+                  child: PrimaryButton(
+                    label: 'ADD TO ORDER',
                     onPressed: () {
                       debugPrint('Add to Order Pressed');
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: cinemaBrand,
-                      foregroundColor: cinemaFontWhite,
-                      elevation: 0, // no shadow
-                      padding: EdgeInsets.zero, // removes padding
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.zero, // zero = square corners
-                      ),
-                    ),
-                    child: const Text(
-                      'ADD TO ORDER',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
                   ),
                 ),
               ],

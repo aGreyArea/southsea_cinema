@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
+import 'package:southsea_cinema/views/basket_view.dart';
 import 'package:southsea_cinema/views/home_view.dart';
+import 'package:southsea_cinema/views/settings_view.dart';
 
 void main() {
   runApp(const SouthseaCinemaApp());
@@ -21,10 +23,24 @@ class SouthseaCinemaApp extends StatelessWidget {
           primary: cinemaBrand,
           surface: cinemaSurface,
         ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: cinemaSurface,
+          iconTheme: IconThemeData(color: cinemaBrand),
+          titleTextStyle: cinemaHeaderStyle,
+          elevation: 0,
+        ),
       ),
       initialRoute: '/',
-      routes: {
-        '/': (context) => const HomeView(),
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) {
+          return const HomeView();
+        },
+        '/basket': (BuildContext context) {
+          return const BasketView();
+        },
+        '/settings': (BuildContext context) {
+          return const SettingsView();
+        },
       },
     );
   }
