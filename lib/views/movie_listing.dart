@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/model.dart';
+import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
 import 'package:southsea_cinema/widgets/primary_button.dart';
 
@@ -16,6 +17,25 @@ class MovieListing extends StatefulWidget {
 class _MovieListingState extends State<MovieListing> {
   // static const blue = Color(0xFF54BFDA) // can't do const on its own as inside a class dart doesnt treat them as constants but as ordinary instance fields that are changeable
   // static const grey = Color(0xFFF0F0F0) // moved to constants file
+
+  int _quantity = 0; // tickets picked in the dropdown
+
+  void _addToOrder() {
+    if (_quantity == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Select how many tickets you want first')),
+      );
+      return;
+    }
+    BasketRepository.instance.addTickets(widget.movie, _quantity);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Added $_quantity tickets for ${widget.movie.name} to your basket',
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +95,7 @@ class _MovieListingState extends State<MovieListing> {
             const SizedBox(height: 8),
 
             Text(
-              widget.movie.screeningTime,
+              widget.movie.screeningDateTime,
               style: const TextStyle(color: cinemaFontWhite, fontSize: 20),
             ),
 
@@ -133,7 +153,11 @@ class _MovieListingState extends State<MovieListing> {
                             '$ticketAmount'), // int to text (string interpolation) ticketAmount.toString()
                       ),
                     ),
-                    onChanged: (value) {}, // null until selected
+                    onChanged: (value) {
+                      setState(() {
+                        _quantity = value ?? 0;
+                      });
+                    },
                   ),
                 ),
                 SizedBox(width: 16),
@@ -150,9 +174,7 @@ class _MovieListingState extends State<MovieListing> {
                   height: 36,
                   child: PrimaryButton(
                     label: 'ADD TO ORDER',
-                    onPressed: () {
-                      debugPrint('Add to Order Pressed');
-                    },
+                    onPressed: _addToOrder,
                   ),
                 ),
               ],

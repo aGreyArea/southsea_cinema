@@ -10,6 +10,7 @@ void main() {
         synopsis: 'A young punk gets a job working with a seasoned repo man.',
         ageRating: '15',
         imagePath: 'assets/images/repo_man.png',
+        screeningDate: 'Friday 27 Nov 2026',
         screeningTime: '19:30',
         price: '9.50',
       );
@@ -20,7 +21,9 @@ void main() {
           'A young punk gets a job working with a seasoned repo man.');
       expect(movie.ageRating, '15');
       expect(movie.imagePath, 'assets/images/repo_man.png');
+      expect(movie.screeningDate, 'Friday 27 Nov 2026');
       expect(movie.screeningTime, '19:30');
+      expect(movie.screeningDateTime, 'Friday 27 Nov 2026  19:30');
       expect(movie.price, '9.50');
     });
 
@@ -32,6 +35,7 @@ void main() {
         synopsis: 'A couple are disturbed by a presence in their house.',
         ageRating: '15',
         imagePath: 'assets/images/paranormal_activity.png',
+        screeningDate: 'Friday 27 Nov 2026',
         screeningTime: '21:45',
         price: '7.00',
       );
@@ -46,6 +50,7 @@ void main() {
         synopsis: 'A young punk gets a job working with a seasoned repo man.',
         ageRating: '15',
         imagePath: 'assets/images/repo_man.png',
+        screeningDate: 'Friday 27 Nov 2026',
         screeningTime: '19:30',
         price: '9.50',
       );

@@ -4,6 +4,7 @@ class Movie {
   final String synopsis;
   final String ageRating;
   final String imagePath;
+  final String screeningDate;
   final String screeningTime;
   final String price;
 
@@ -13,9 +14,12 @@ class Movie {
     required this.synopsis,
     required this.ageRating,
     required this.imagePath,
+    required this.screeningDate,
     required this.screeningTime,
     required this.price,
   });
 
   String get formattedPrice => '£$price';
+
+  String get screeningDateTime => '$screeningDate  $screeningTime';
 }

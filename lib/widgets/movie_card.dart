@@ -1,16 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/model.dart';
+import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/views/movie_listing.dart';
 import 'package:southsea_cinema/widgets/primary_button.dart';
 
-class MovieCard extends StatelessWidget {
+class MovieCard extends StatefulWidget {
   final Movie movie;
 
   const MovieCard({super.key, required this.movie});
 
   @override
+  State<MovieCard> createState() => _MovieCardState();
+}
+
+class _MovieCardState extends State<MovieCard> {
+  int _quantity = 0; // tickets picked in the dropdown
+
+  void _addToOrder() {
+    if (_quantity == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Select how many tickets you want first')),
+      );
+      return;
+    }
+    BasketRepository.instance.addTickets(widget.movie, _quantity);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Added $_quantity tickets for ${widget.movie.name} to your basket',
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final Movie movie = widget.movie;
     return Card(
       color: cinemaSurface,
       elevation: 0,
@@ -48,7 +74,7 @@ class MovieCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              movie.screeningTime,
+              movie.screeningDateTime,
               style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -96,7 +122,11 @@ class MovieCard extends StatelessWidget {
                             '$ticketAmount'), // int to text (string interpolation) ticketAmount.toString()
                       ),
                     ),
-                    onChanged: (value) {}, // null until selected
+                    onChanged: (value) {
+                      setState(() {
+                        _quantity = value ?? 0;
+                      });
+                    },
                   ),
                 ),
               ],
@@ -109,9 +139,7 @@ class MovieCard extends StatelessWidget {
                   height: 36,
                   child: PrimaryButton(
                     label: 'Add to order',
-                    onPressed: () {
-                      debugPrint('Add to Order Pressed');
-                    },
+                    onPressed: _addToOrder,
                   ),
                 ),
                 const SizedBox(width: 16),
