@@ -11,7 +11,7 @@ void main() {
     imagePath: 'assets/images/repo_man.png',
     screeningDate: 'Friday 27 Nov 2026',
     screeningTime: '19:30',
-    price: '9.50',
+    price: 9.50,
   );
 
   group('CartItem', () {

@@ -134,16 +134,14 @@ class _MovieListingState extends State<MovieListing> {
                     style: const TextStyle(color: Colors.black, fontSize: 16),
                     dropdownColor: const Color(0xFFF0F0F0),
                     decoration: const InputDecoration(
-                      isDense: true, // compact
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      filled: true,
-                      fillColor: Color(0xFFF0F0F0),
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.zero, // square corners > rounded
-                      ),
-                    ),
+                        isDense: true, // compact
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        filled: true,
+                        fillColor: Color(0xFFF0F0F0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                        )),
                     items: List.generate(
                       // creates 6 values in the dropdown 1 itteration is one option
                       6,
@@ -156,6 +154,7 @@ class _MovieListingState extends State<MovieListing> {
                     onChanged: (value) {
                       setState(() {
                         _quantity = value ?? 0;
+                        // _quantity = value ?? 0;
                       });
                     },
                   ),

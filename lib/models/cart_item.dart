@@ -10,6 +10,6 @@ class CartItem {
   });
 
   double get lineTotal {
-    return double.parse(movie.price) * quantity;
+    return movie.price * quantity;
   }
 }

@@ -8,6 +8,8 @@ import 'package:southsea_cinema/views/basket_view.dart';
 import 'package:southsea_cinema/views/home_view.dart';
 import 'package:southsea_cinema/widgets/movie_card.dart';
 
+import '../helpers/pump_with_films.dart';
+
 void main() {
   final MovieRepository movieRepository = MovieRepository();
   final Movie repoMan = movieRepository.getMovieById('repo-man')!; // £9.50
@@ -120,7 +122,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(const SouthseaCinemaApp());
+    await pumpAndLoadFilms(tester, const SouthseaCinemaApp());
 
     final Finder firstCard = find.byType(MovieCard).first;
     await tester.tap(find.descendant(
@@ -139,5 +141,77 @@ void main() {
     expect(basket.getItems()[0].quantity, 2);
     expect(find.text('Added 2 tickets for Repo Man to your basket'),
         findsOneWidget);
+  });
+
+  testWidgets(
+      'booking flow: add JSON films, remove one, checkout clears the basket',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    // The cards come from assets/data/movies.json, not the hard-coded list.
+    await pumpAndLoadFilms(tester, const SouthseaCinemaApp());
+    final List<Movie>? films =
+        await tester.runAsync(() => MovieRepository().loadMoviesFromAsset());
+    expect(find.byType(MovieCard), findsNWidgets(films!.length));
+    final Movie firstFilm = films[0]; // Repo Man, £9.50
+    final Movie secondFilm = films[1]; // Paranormal Activity, £7.00
+
+    Future<void> addTickets(int cardIndex, int quantity) async {
+      final Finder card = find.byType(MovieCard).at(cardIndex);
+      await tester.tap(find.descendant(
+        of: card,
+        matching: find.byType(DropdownButtonFormField<int>),
+      ));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('$quantity').last);
+      await tester.pumpAndSettle();
+      await tester
+          .tap(find.descendant(of: card, matching: find.text('Add to order')));
+      await tester.pump();
+    }
+
+    // 1. Add tickets for both films loaded from the asset.
+    await addTickets(0, 2);
+    await addTickets(1, 3);
+    expect(basket.getItems().map((item) => item.movie.id),
+        [firstFilm.id, secondFilm.id]);
+    expect(basket.totalQuantity, 5);
+
+    // 2. Open the basket from the drawer.
+    await tester.tap(find.byTooltip('Open navigation menu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('My Basket'));
+    await tester.pumpAndSettle();
+    expect(find.byType(BasketView), findsOneWidget);
+    expect(find.text('2 Tickets'), findsOneWidget);
+    expect(find.text('3 Tickets'), findsOneWidget);
+    expect(find.text('£44.00'), findsOneWidget); // £19 + £21 + £4 service
+
+    // 3. Remove the first film.
+    await tester.tap(find.byKey(Key('delete-${firstFilm.id}')));
+    await tester.pump();
+    expect(basket.getItems().length, 1);
+    expect(basket.getItems()[0].movie.id, secondFilm.id);
+    expect(find.text('£23.40'), findsOneWidget); // £21 + 3 x £0.80
+
+    // 4. Temporary checkout: clears the in-memory basket only.
+    await tester.tap(find.text('BUY TICKETS'));
+    await tester.pump();
+    expect(basket.isEmpty, isTrue);
+    expect(basket.totalDue, 0);
+    expect(find.text('Your basket is empty.'), findsOneWidget);
+    expect(
+      find.text(
+          'Thank you! Your order for 3 tickets (£23.40) has been placed.'),
+      findsOneWidget,
+    );
+
+    // Nothing is kept after checkout (saved bookings arrive in Worksheet 7):
+    // the next order starts from an empty basket.
+    basket.addTickets(firstFilm, 1);
+    expect(basket.totalQuantity, 1);
+    expect(basket.getItems().length, 1);
   });
 }

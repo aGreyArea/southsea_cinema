@@ -92,7 +92,7 @@ class _MovieCardState extends State<MovieCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Tickets (£${movie.price} each)',
+                  'Tickets (${movie.formattedPrice} each)',
                   style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
                 ),
                 SizedBox(

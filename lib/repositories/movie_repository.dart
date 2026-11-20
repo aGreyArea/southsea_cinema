@@ -1,6 +1,21 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
 import 'package:southsea_cinema/models/model.dart';
 
 class MovieRepository {
+  static const String moviesAssetPath = 'assets/data/movies.json';
+
+  // Reads the films from the bundled JSON asset.
+  // The synchronous getMovies() below is kept for the existing lookup tests.
+  Future<List<Movie>> loadMoviesFromAsset() async {
+    final String jsonString = await rootBundle.loadString(moviesAssetPath);
+    final List<dynamic> jsonList = jsonDecode(jsonString) as List<dynamic>;
+    return jsonList
+        .map((item) => Movie.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
   List<Movie> getMovies() {
     return const [
       Movie(
@@ -12,7 +27,7 @@ class MovieRepository {
         imagePath: 'assets/images/repo_man.png',
         screeningDate: 'Friday 27 Nov 2026',
         screeningTime: '19:30',
-        price: '9.50',
+        price: 9.50,
       ),
       Movie(
         id: 'paranormal-activity',
@@ -23,10 +38,16 @@ class MovieRepository {
         imagePath: 'assets/images/paranormal_activity.png',
         screeningDate: 'Saturday 28 Nov 2026',
         screeningTime: '21:45',
-        price: '7.00',
+        price: 7.00,
       ),
     ];
   }
+  // class ProgressIndicatorExample extends StatefulWidget {
+  // const ProgressIndicatorExample({super.key});
+
+  // @override
+  // State<ProgressIndicatorExample> createState() =>
+  //     _ProgressIndicatorExampleState();
 
   Movie? getMovieById(String id) {
     for (final movie in getMovies()) {

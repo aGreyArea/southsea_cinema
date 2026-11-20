@@ -12,7 +12,6 @@ void main() {
   group('BasketRepository unit tests', () {
     test('basket starts empty', () {
       final BasketRepository basket = BasketRepository();
-
       expect(basket.getItems(), isEmpty);
       expect(basket.isEmpty, isTrue);
       expect(basket.total, 0);

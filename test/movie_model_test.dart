@@ -12,7 +12,7 @@ void main() {
         imagePath: 'assets/images/repo_man.png',
         screeningDate: 'Friday 27 Nov 2026',
         screeningTime: '19:30',
-        price: '9.50',
+        price: 9.50,
       );
 
       expect(movie.id, 'repo-man');
@@ -24,7 +24,7 @@ void main() {
       expect(movie.screeningDate, 'Friday 27 Nov 2026');
       expect(movie.screeningTime, '19:30');
       expect(movie.screeningDateTime, 'Friday 27 Nov 2026  19:30');
-      expect(movie.price, '9.50');
+      expect(movie.price, 9.50);
     });
 
     test('formattedPrice shows a whole-pound price with two decimal places',
@@ -37,7 +37,7 @@ void main() {
         imagePath: 'assets/images/paranormal_activity.png',
         screeningDate: 'Friday 27 Nov 2026',
         screeningTime: '21:45',
-        price: '7.00',
+        price: 7.00,
       );
 
       expect(movie.formattedPrice, '£7.00');
@@ -52,10 +52,95 @@ void main() {
         imagePath: 'assets/images/repo_man.png',
         screeningDate: 'Friday 27 Nov 2026',
         screeningTime: '19:30',
-        price: '9.50',
+        price: 9.50,
       );
 
       expect(movie.formattedPrice, '£9.50');
+    });
+
+    test('fromJson reads every field', () {
+      final Map<String, dynamic> json = {
+        'id': 'repo-man',
+        'name': 'Repo Man',
+        'synopsis': 'A young punk gets a job working with a seasoned repo man.',
+        'ageRating': '15',
+        'imagePath': 'assets/images/repo_man.png',
+        'screeningDate': 'Friday 27 Nov 2026',
+        'screeningTime': '19:30',
+        'price': 9.50,
+      };
+
+      final Movie movie = Movie.fromJson(json);
+
+      expect(movie.id, 'repo-man');
+      expect(movie.name, 'Repo Man');
+      expect(movie.synopsis,
+          'A young punk gets a job working with a seasoned repo man.');
+      expect(movie.ageRating, '15');
+      expect(movie.imagePath, 'assets/images/repo_man.png');
+      expect(movie.screeningDate, 'Friday 27 Nov 2026');
+      expect(movie.screeningTime, '19:30');
+      expect(movie.price, 9.50);
+    });
+
+    test('fromJson converts a whole-number price to a double', () {
+      final Map<String, dynamic> json = {
+        'id': 'paranormal-activity',
+        'name': 'Paranormal Activity',
+        'synopsis': 'A couple are disturbed by a presence in their house.',
+        'ageRating': '15',
+        'imagePath': 'assets/images/paranormal_activity.png',
+        'screeningDate': 'Saturday 28 Nov 2026',
+        'screeningTime': '21:45',
+        'price': 7,
+      };
+
+      final Movie movie = Movie.fromJson(json);
+
+      expect(movie.price, isA<double>());
+      expect(movie.price, 7.0);
+      expect(movie.formattedPrice, '£7.00');
+    });
+
+    test('toJson writes every field', () {
+      const Movie movie = Movie(
+        id: 'repo-man',
+        name: 'Repo Man',
+        synopsis: 'A young punk gets a job working with a seasoned repo man.',
+        ageRating: '15',
+        imagePath: 'assets/images/repo_man.png',
+        screeningDate: 'Friday 27 Nov 2026',
+        screeningTime: '19:30',
+        price: 9.50,
+      );
+
+      expect(movie.toJson(), {
+        'id': 'repo-man',
+        'name': 'Repo Man',
+        'synopsis': 'A young punk gets a job working with a seasoned repo man.',
+        'ageRating': '15',
+        'imagePath': 'assets/images/repo_man.png',
+        'screeningDate': 'Friday 27 Nov 2026',
+        'screeningTime': '19:30',
+        'price': 9.50,
+      });
+    });
+
+    test('toJson then fromJson gives back the same values', () {
+      const Movie original = Movie(
+        id: 'paranormal-activity',
+        name: 'Paranormal Activity',
+        synopsis: 'A couple are disturbed by a presence in their house.',
+        ageRating: '15',
+        imagePath: 'assets/images/paranormal_activity.png',
+        screeningDate: 'Saturday 28 Nov 2026',
+        screeningTime: '21:45',
+        price: 7,
+      );
+
+      final Movie copy = Movie.fromJson(original.toJson());
+
+      expect(copy.toJson(), original.toJson());
     });
   });
 }
