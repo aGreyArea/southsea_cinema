@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/user_settings.dart';
 import 'package:southsea_cinema/repositories/settings_repository.dart';
+import 'package:southsea_cinema/repositories/theme_repository.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
 import 'package:southsea_cinema/widgets/primary_button.dart';
 
@@ -68,8 +69,26 @@ class _SettingsViewState extends State<SettingsView> {
     });
   }
 
+  // Applied and saved straight away, so the user sees the change at once.
+  Future<void> _setDarkMode(bool darkMode) async {
+    try {
+      await ThemeRepository.instance.setDarkMode(darkMode);
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not save the theme: $error')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colours = Theme.of(context).colorScheme;
+    final TextStyle fieldTextStyle = _fieldTextStyle(colours);
+    final InputDecoration fieldDecoration = _fieldDecoration(colours);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(appTitle),
@@ -80,10 +99,10 @@ class _SettingsViewState extends State<SettingsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'My Settings',
               style: TextStyle(
-                color: cinemaFontWhite,
+                color: colours.onSurface,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -96,11 +115,11 @@ class _SettingsViewState extends State<SettingsView> {
               minLines: 4,
               maxLines: 4,
               keyboardType: TextInputType.multiline,
-              style: _fieldTextStyle,
-              decoration: _fieldDecoration.copyWith(
+              style: fieldTextStyle,
+              decoration: fieldDecoration.copyWith(
                 suffixIcon: IconButton(
                   key: const Key('clear-address'),
-                  icon: const Icon(Icons.close, color: cinemaFontMuted),
+                  icon: Icon(Icons.close, color: colours.onSurfaceVariant),
                   onPressed: () {
                     _addressController.clear();
                   },
@@ -113,8 +132,8 @@ class _SettingsViewState extends State<SettingsView> {
               key: const Key('email-field'),
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              style: _fieldTextStyle,
-              decoration: _fieldDecoration,
+              style: fieldTextStyle,
+              decoration: fieldDecoration,
             ),
             const SizedBox(height: 24),
             const _FieldLabel('Patron Number'),
@@ -123,25 +142,48 @@ class _SettingsViewState extends State<SettingsView> {
               controller: _patronNumberController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              style: _fieldTextStyle,
-              decoration: _fieldDecoration,
+              style: fieldTextStyle,
+              decoration: fieldDecoration,
             ),
             const SizedBox(height: 24),
             const _FieldLabel('Preferences'),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Receive news by email',
-                  style: TextStyle(color: cinemaFontWhite, fontSize: 16),
+                  style: TextStyle(color: colours.onSurface, fontSize: 16),
                 ),
                 Switch(
+                  key: const Key('newsletter-switch'),
                   value: _receiveNewsletter,
                   activeThumbColor: cinemaBrand,
                   onChanged: (bool value) {
                     setState(() {
                       _receiveNewsletter = value;
                     });
+                  },
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Dark mode',
+                  style: TextStyle(color: colours.onSurface, fontSize: 16),
+                ),
+                // listens to the theme so the switch always matches it
+                ValueListenableBuilder<ThemeMode>(
+                  valueListenable: ThemeRepository.instance.themeMode,
+                  builder: (BuildContext context, ThemeMode themeMode,
+                      Widget? child) {
+                    return Switch(
+                      key: const Key('dark-mode-switch'),
+                      value: themeMode == ThemeMode.dark,
+                      activeThumbColor: cinemaBrand,
+                      onChanged: _setDarkMode,
+                    );
                   },
                 ),
               ],
@@ -154,8 +196,8 @@ class _SettingsViewState extends State<SettingsView> {
                   child: ElevatedButton(
                     onPressed: _cancel,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: cinemaSurface,
-                      foregroundColor: cinemaFontWhite,
+                      backgroundColor: colours.surface,
+                      foregroundColor: colours.onSurface,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       shape: const RoundedRectangleBorder(
@@ -182,25 +224,29 @@ class _SettingsViewState extends State<SettingsView> {
   }
 }
 
-const TextStyle _fieldTextStyle = TextStyle(
-  color: cinemaFontWhite,
-  fontSize: 18,
-  height: 1.5,
-);
+TextStyle _fieldTextStyle(ColorScheme colours) {
+  return TextStyle(
+    color: colours.onSurface,
+    fontSize: 18,
+    height: 1.5,
+  );
+}
 
-const InputDecoration _fieldDecoration = InputDecoration(
-  filled: true,
-  fillColor: cinemaSurface,
-  contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.zero,
-    borderSide: BorderSide(color: Color(0xFF3A4050)),
-  ),
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.zero,
-    borderSide: BorderSide(color: cinemaBrand),
-  ),
-);
+InputDecoration _fieldDecoration(ColorScheme colours) {
+  return InputDecoration(
+    filled: true,
+    fillColor: colours.surface,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.zero,
+      borderSide: BorderSide(color: colours.outlineVariant),
+    ),
+    focusedBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.zero,
+      borderSide: BorderSide(color: cinemaBrand),
+    ),
+  );
+}
 
 // grey heading above each field, e.g. "Address"
 class _FieldLabel extends StatelessWidget {
@@ -214,8 +260,8 @@ class _FieldLabel extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         text,
-        style: const TextStyle(
-          color: cinemaFontMuted,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),

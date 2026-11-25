@@ -39,6 +39,8 @@ class _MovieListingState extends State<MovieListing> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colours = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(appTitle),
@@ -53,8 +55,8 @@ class _MovieListingState extends State<MovieListing> {
             // lists widgets inside of a column
             Text(
               '${widget.movie.name.toUpperCase()} (${widget.movie.ageRating})',
-              style: const TextStyle(
-                color: cinemaFontWhite,
+              style: TextStyle(
+                color: colours.onSurface,
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
@@ -78,8 +80,8 @@ class _MovieListingState extends State<MovieListing> {
 
             Text(
               widget.movie.synopsis,
-              style: const TextStyle(
-                color: cinemaFontWhite,
+              style: TextStyle(
+                color: colours.onSurface,
                 fontSize: 20,
                 height: 1.5,
               ),
@@ -87,16 +89,16 @@ class _MovieListingState extends State<MovieListing> {
 
             const SizedBox(height: 24),
 
-            const Text(
+            Text(
               'Southsea Cinema Room',
-              style: TextStyle(color: cinemaFontWhite, fontSize: 20),
+              style: TextStyle(color: colours.onSurface, fontSize: 20),
             ),
 
             const SizedBox(height: 8),
 
             Text(
               widget.movie.screeningDateTime,
-              style: const TextStyle(color: cinemaFontWhite, fontSize: 20),
+              style: TextStyle(color: colours.onSurface, fontSize: 20),
             ),
 
             SizedBox(height: 28),
@@ -104,7 +106,7 @@ class _MovieListingState extends State<MovieListing> {
             Text(
               'Tickets',
               style: TextStyle(
-                color: cinemaFontWhite,
+                color: colours.onSurface,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -115,7 +117,7 @@ class _MovieListingState extends State<MovieListing> {
             Text(
               'Select Quantaties (up to 5 total)',
               style: TextStyle(
-                color: cinemaFontWhite,
+                color: colours.onSurface,
                 fontSize: 15,
                 fontWeight: FontWeight.normal,
               ),
@@ -163,7 +165,7 @@ class _MovieListingState extends State<MovieListing> {
                 Text(
                   'Adult (${widget.movie.formattedPrice})',
                   style: TextStyle(
-                    color: cinemaFontWhite,
+                    color: colours.onSurface,
                     fontSize: 20,
                   ),
                 ),

@@ -63,7 +63,10 @@ class _HomeViewState extends State<HomeView> {
           child: Text(
             _errorMessage!,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 16,
+            ),
           ),
         ),
       );

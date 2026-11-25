@@ -37,8 +37,9 @@ class _MovieCardState extends State<MovieCard> {
   @override
   Widget build(BuildContext context) {
     final Movie movie = widget.movie;
+    final ColorScheme colours = Theme.of(context).colorScheme;
     return Card(
-      color: cinemaSurface,
+      color: colours.surface,
       elevation: 0,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       margin: const EdgeInsets.all(16),
@@ -49,8 +50,8 @@ class _MovieCardState extends State<MovieCard> {
           children: [
             Text(
               '${movie.name.toUpperCase()} (${movie.ageRating})',
-              style: const TextStyle(
-                color: cinemaFontWhite,
+              style: TextStyle(
+                color: colours.onSurface,
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
@@ -68,20 +69,20 @@ class _MovieCardState extends State<MovieCard> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Southsea Cinema Room',
-              style: TextStyle(color: cinemaFontWhite, fontSize: 16),
+              style: TextStyle(color: colours.onSurface, fontSize: 16),
             ),
             const SizedBox(height: 8),
             Text(
               movie.screeningDateTime,
-              style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
+              style: TextStyle(color: colours.onSurface, fontSize: 16),
             ),
             const SizedBox(height: 16),
             Text(
               movie.synopsis,
-              style: const TextStyle(
-                color: cinemaFontWhite,
+              style: TextStyle(
+                color: colours.onSurface,
                 fontSize: 16,
                 height: 1.5,
               ),
@@ -93,7 +94,7 @@ class _MovieCardState extends State<MovieCard> {
               children: [
                 Text(
                   'Tickets (${movie.formattedPrice} each)',
-                  style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
+                  style: TextStyle(color: colours.onSurface, fontSize: 16),
                 ),
                 SizedBox(
                   width: 90,

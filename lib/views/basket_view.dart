@@ -178,7 +178,9 @@ class _PastBookings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const TextStyle textStyle = TextStyle(color: cinemaFontWhite, fontSize: 16);
+    final ColorScheme colours = Theme.of(context).colorScheme;
+    final TextStyle textStyle =
+        TextStyle(color: colours.onSurface, fontSize: 16);
 
     final Widget body;
     if (loading) {
@@ -186,7 +188,7 @@ class _PastBookings extends StatelessWidget {
     } else if (errorMessage.isNotEmpty) {
       body = Text(errorMessage, style: textStyle);
     } else if (bookings.isEmpty) {
-      body = const Text('You have no past bookings.', style: textStyle);
+      body = Text('You have no past bookings.', style: textStyle);
     } else {
       body = Column(
         children: [
@@ -211,8 +213,8 @@ class _PastBookings extends StatelessWidget {
                         Text(booking.summary, style: textStyle),
                         Text(
                           booking.date,
-                          style: const TextStyle(
-                            color: cinemaFontMuted,
+                          style: TextStyle(
+                            color: colours.onSurfaceVariant,
                             fontSize: 14,
                           ),
                         ),
@@ -230,12 +232,12 @@ class _PastBookings extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 16),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
           child: Text(
             'PAST BOOKINGS',
             style: TextStyle(
-              color: cinemaFontWhite,
+              color: colours.onSurface,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -257,12 +259,12 @@ class _OrderHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(bottom: 24),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
       child: Text(
         'MY ORDER',
         style: TextStyle(
-          color: cinemaFontWhite,
+          color: Theme.of(context).colorScheme.onSurface,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
@@ -277,15 +279,18 @@ class _EmptyBasket extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _OrderHeading(),
+        const _OrderHeading(),
         Padding(
-          padding: EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 16),
           child: Text(
             'Your basket is empty.',
-            style: TextStyle(color: cinemaFontWhite, fontSize: 16),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 16,
+            ),
           ),
         ),
       ],
@@ -309,6 +314,15 @@ class _BasketList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colours = Theme.of(context).colorScheme;
+    final TextStyle textStyle =
+        TextStyle(color: colours.onSurface, fontSize: 16);
+    final TextStyle totalStyle = TextStyle(
+      color: colours.onSurface,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -323,36 +337,16 @@ class _BasketList extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Service Charge',
-              style: TextStyle(color: cinemaFontWhite, fontSize: 16),
-            ),
-            Text(
-              _formatPrice(cart.serviceCharge),
-              style: const TextStyle(color: cinemaFontWhite, fontSize: 16),
-            ),
+            Text('Service Charge', style: textStyle),
+            Text(_formatPrice(cart.serviceCharge), style: textStyle),
           ],
         ),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Total Due',
-              style: TextStyle(
-                color: cinemaFontWhite,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              _formatPrice(cart.totalDue),
-              style: const TextStyle(
-                color: cinemaFontWhite,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text('Total Due', style: totalStyle),
+            Text(_formatPrice(cart.totalDue), style: totalStyle),
           ],
         ),
         const SizedBox(height: 24),
@@ -372,23 +366,23 @@ class _BasketList extends StatelessWidget {
 class _BasketHeader extends StatelessWidget {
   const _BasketHeader();
 
-  static const TextStyle _style = TextStyle(
-    color: cinemaFontWhite,
-    fontSize: 16,
-    fontWeight: FontWeight.bold,
-  );
-
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    final TextStyle style = TextStyle(
+      color: Theme.of(context).colorScheme.onSurface,
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+    );
+
+    return Row(
       children: [
-        Expanded(flex: 2, child: Text('Item', style: _style)),
-        Expanded(flex: 4, child: Text('Details', style: _style)),
+        Expanded(flex: 2, child: Text('Item', style: style)),
+        Expanded(flex: 4, child: Text('Details', style: style)),
         Expanded(
           flex: 2,
-          child: Text('Price', style: _style, textAlign: TextAlign.right),
+          child: Text('Price', style: style, textAlign: TextAlign.right),
         ),
-        SizedBox(width: 72), // lines up with the delete buttons below
+        const SizedBox(width: 72), // lines up with the delete buttons below
       ],
     );
   }
@@ -403,8 +397,8 @@ class _BasketRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const TextStyle textStyle = TextStyle(
-      color: cinemaFontWhite,
+    final TextStyle textStyle = TextStyle(
+      color: Theme.of(context).colorScheme.onSurface,
       fontSize: 16,
       height: 1.5,
     );
