@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
+import 'package:southsea_cinema/database/cinema_db.dart';
+import 'package:southsea_cinema/models/booking.dart';
 import 'package:southsea_cinema/models/cart_item.dart';
 import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
@@ -17,21 +19,94 @@ class BasketView extends StatefulWidget {
 class _BasketViewState extends State<BasketView> {
   String _confirmationMessage = '';
 
+  // past bookings shown below the basket
+  List<Booking> _bookings = [];
+  bool _loading = true;
+  String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookings();
+  }
+
+  Future<void> _loadBookings() async {
+    try {
+      final List<Booking> bookings =
+          await CinemaDatabase.instance.getAllBookings();
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _bookings = bookings;
+        _loading = false;
+        _errorMessage = '';
+      });
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _loading = false;
+        _errorMessage = 'Could not load your bookings: $error';
+      });
+    }
+  }
+
   void _removeTickets(CartItem item) {
     setState(() {
       BasketRepository.instance.removeTickets(item.movie);
     });
   }
 
-  void _buyTickets() {
-    final BasketRepository cart = BasketRepository.instance;
-    final int tickets = cart.totalQuantity;
-    final String total = _formatPrice(cart.totalDue);
-    setState(() {
+  String _buildSummary(List<CartItem> items) {
+    final List<String> parts = [];
+    for (final CartItem item in items) {
+      parts.add('${item.quantity} x ${item.movie.name}');
+    }
+    return parts.join(', ');
+  }
+
+  String _formatDate(DateTime now) {
+    final String day = now.day.toString().padLeft(2, '0');
+    final String month = now.month.toString().padLeft(2, '0');
+    final String hour = now.hour.toString().padLeft(2, '0');
+    final String minute = now.minute.toString().padLeft(2, '0');
+    return '$day/$month/${now.year} $hour:$minute';
+  }
+
+  Future<void> _checkout(BasketRepository cart, List<CartItem> items) async {
+    final String summary = _buildSummary(items);
+    final double total = cart.totalDue;
+    final String date = _formatDate(DateTime.now());
+
+    try {
+      final CinemaDatabase database = CinemaDatabase.instance;
+      final int bookingNumber = await database.getNextBookingNumber();
+      final Booking booking = Booking(
+        bookingNumber: bookingNumber,
+        summary: summary,
+        total: total,
+        date: date,
+      );
+
+      await database.insertBooking(booking);
       cart.clear();
-      _confirmationMessage =
-          'Thank you! Your order for $tickets tickets ($total) has been placed.';
-    });
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _confirmationMessage = 'Booking $bookingNumber saved';
+      });
+      await _loadBookings();
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _confirmationMessage = 'Could not save your booking: $error';
+      });
+    }
   }
 
   void _updateOrder() {
@@ -46,23 +121,13 @@ class _BasketViewState extends State<BasketView> {
 
     final Widget content;
     if (items.isEmpty) {
-      if (_confirmationMessage.isNotEmpty) {
-        content = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _EmptyBasket(),
-            Text(_confirmationMessage),
-          ],
-        );
-      } else {
-        content = const _EmptyBasket();
-      }
+      content = const _EmptyBasket();
     } else {
       content = _BasketList(
         cart: cart,
         onDelete: _removeTickets,
         onUpdateOrder: _updateOrder,
-        onBuyTickets: _buyTickets,
+        onBuyTickets: () => _checkout(cart, items),
       );
     }
 
@@ -73,8 +138,111 @@ class _BasketViewState extends State<BasketView> {
       drawer: const NavDrawer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: content,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            content,
+            // shown after checkout, or if saving the booking failed
+            if (_confirmationMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text(
+                  _confirmationMessage,
+                  style: const TextStyle(color: cinemaBrand, fontSize: 16),
+                ),
+              ),
+            const SizedBox(height: 32),
+            _PastBookings(
+              bookings: _bookings,
+              loading: _loading,
+              errorMessage: _errorMessage,
+            ),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+// "PAST BOOKINGS" list below the basket, newest booking number first
+class _PastBookings extends StatelessWidget {
+  final List<Booking> bookings;
+  final bool loading;
+  final String errorMessage;
+
+  const _PastBookings({
+    required this.bookings,
+    required this.loading,
+    required this.errorMessage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const TextStyle textStyle = TextStyle(color: cinemaFontWhite, fontSize: 16);
+
+    final Widget body;
+    if (loading) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (errorMessage.isNotEmpty) {
+      body = Text(errorMessage, style: textStyle);
+    } else if (bookings.isEmpty) {
+      body = const Text('You have no past bookings.', style: textStyle);
+    } else {
+      body = Column(
+        children: [
+          for (final Booking booking in bookings)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Booking ${booking.bookingNumber}',
+                          style: const TextStyle(
+                            color: cinemaBrand,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(booking.summary, style: textStyle),
+                        Text(
+                          booking.date,
+                          style: const TextStyle(
+                            color: cinemaFontMuted,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(_formatPrice(booking.total), style: textStyle),
+                ],
+              ),
+            ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(bottom: 16),
+          child: Text(
+            'PAST BOOKINGS',
+            style: TextStyle(
+              color: cinemaFontWhite,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        body,
+      ],
     );
   }
 }
